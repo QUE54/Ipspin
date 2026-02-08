@@ -1,58 +1,44 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Setup Admin</title>
 <link rel="stylesheet" href="style.css">
-<style>
-body{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  background:#0f172a;
-}
-.card{
-  width:100%;
-  max-width:360px;
-}
-</style>
 </head>
 <body>
 
-<div class="card">
-  <h2>ตั้งค่าแอดมินครั้งแรก</h2>
+<div class="container">
+  <div class="card">
+    <h2>ตั้งค่าแอดมินครั้งแรก</h2>
 
-  <input id="key" placeholder="ADMIN_SETUP_KEY">
-  <input id="user" placeholder="Username">
-  <input id="pass" type="password" placeholder="Password">
+    <input id="key" placeholder="ADMIN_SETUP_KEY">
+    <input id="user" placeholder="Username">
+    <input id="pass" type="password" placeholder="Password">
 
-  <button onclick="setup()">สร้างแอดมิน</button>
+    <button onclick="setup()">Create Admin</button>
 
-  <p id="msg"></p>
+    <p id="msg"></p>
+  </div>
 </div>
 
 <script>
 async function setup(){
   msg.textContent = "กำลังสร้าง..."
-
   const r = await fetch("/setup-admin",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
-      key: key.value,
-      username: user.value,
-      password: pass.value
+      key:key.value,
+      username:user.value,
+      password:pass.value
     })
   })
-
   if(!r.ok){
-    msg.textContent = "❌ key ผิด หรือสร้างไปแล้ว"
+    msg.textContent = "❌ Error: key ผิดหรือเคยสร้างแล้ว"
     return
   }
-
-  msg.textContent = "✅ สร้างแอดมินสำเร็จ! ไปหน้า admin.html"
+  msg.textContent = "✅ สร้างแอดมินสำเร็จ"
 }
 </script>
 
