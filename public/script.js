@@ -2,13 +2,26 @@
    MOCK DATABASE (แทน backend)
 ========================= */
 let wheelData = [
-  { name: "รางวัล A", weight: 50 },
-  { name: "รางวัล B", weight: 50 }
+  { name: "1", weight: 60 },
+  { name: "2", weight: 30 },
+  { name: "3", weight: 7 },
+  { name: "4", weight: 3 }
 ];
 
 let ipRights = {
   "LOCAL": { spins: 3, banned: false }
 };
+
+function calculatePercentages() {
+  const totalWeight = wheelData.reduce((s, i) => s + i.weight, 0);
+
+  return wheelData.map(item => ({
+    ...item,
+    percent: totalWeight === 0
+      ? 0
+      : Math.round((item.weight / totalWeight) * 100)
+  }));
+}
 
 /* =========================
    IP
