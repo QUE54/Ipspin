@@ -5,6 +5,8 @@ import mongoose from "mongoose"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
+console.log("ENV ALL KEYS:", Object.keys(process.env))
+
 dotenv.config()
 const app = express()
 app.use(express.json())
@@ -103,5 +105,16 @@ app.get("/admin/wheel", adminGuard, async (_, res) =>
 app.post("/admin/wheel", adminGuard, async (req, res) =>
   res.json(await Wheel.create(req.body))
 )
+
+const MONGO =
+  process.env.MONGO_URI ||
+  process.env.DATABASE_URL ||
+  process.env.MONGODB_URI
+
+if (!MONGO) {
+  throw new Error("Mongo URI missing")
+}
+
+mongoose.connect(MONGO)
 
 app.listen(3000)
