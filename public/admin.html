@@ -1,49 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="utf-8">
 <title>Admin</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-
-  <div class="card" id="loginBox">
-    <h2>Admin Login</h2>
-    <input id="user" placeholder="Username">
-    <input id="pass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-  </div>
-
-  <div id="adminPanel" style="display:none">
-
-    <div class="card">
-      <h2>ผู้ที่สุ่มแล้ว</h2>
-      <div class="list" id="spinList"></div>
-    </div>
-
-    <div class="card">
-      <h2>จัดการวงล้อ</h2>
-      <input id="label" placeholder="ชื่อรางวัล">
-      <input id="percent" type="number" placeholder="เปอร์เซ็นต์">
-      <button onclick="addWheel()">เพิ่ม</button>
-      <div class="list" id="wheelList"></div>
-    </div>
-
-  </div>
+<div id="login">
+  <h2>Admin Login</h2>
+  <input id="user" placeholder="username">
+  <input id="pass" type="password" placeholder="password">
+  <button onclick="login()">Login</button>
 </div>
 
-<script src="app.js">
+<div id="panel" style="display:none">
+  <h2>IP Access</h2>
+  <div id="iplist"></div>
 
-const DEVICE_TOKEN = "3141592653589793"
+  <h2>Wheel</h2>
+  <textarea id="wheelInput" placeholder="ชื่อ,น้ำหนัก"></textarea>
+  <button onclick="saveWheel()">Save</button>
+</div>
 
-if (!DEVICE_TOKEN) {
-  alert("อุปกรณ์นี้ไม่ได้รับอนุญาต")
-  location.href = "/"
-}
-  
-</script>
+<script src="app.js"></script>
 </body>
 </html>
