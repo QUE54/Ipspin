@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="card" id="loginBox">
+    <h2>Admin Login</h2>
+    <input id="user" placeholder="Username">
+    <input id="pass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="adminPanel" style="display:none">
+
+    <div class="card">
+      <h2>ผู้ที่สุ่มแล้ว</h2>
+      <div class="list" id="spinList"></div>
+    </div>
+
+    <div class="card">
+      <h2>จัดการวงล้อ</h2>
+      <input id="label" placeholder="ชื่อรางวัล">
+      <input id="percent" type="number" placeholder="เปอร์เซ็นต์">
+      <button onclick="addWheel()">เพิ่ม</button>
+      <div class="list" id="wheelList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
