@@ -85,20 +85,21 @@ app.post("/spin", async (req,res) => {
 })
 
 // Admin APIs
-app.get("/admin/spins", adminGuard, async (req,res) => {
+// Admin APIs (ล็อกทั้งเครื่อง + token)
+app.get("/admin/spins", deviceGuard, adminGuard, async (req,res) => {
   res.json(await Spin.find())
 })
 
-app.delete("/admin/spins/:ip", adminGuard, async (req,res) => {
+app.delete("/admin/spins/:ip", deviceGuard, adminGuard, async (req,res) => {
   await Spin.deleteOne({ ip:req.params.ip })
   res.send("reset")
 })
 
-app.get("/admin/wheel", adminGuard, async (req,res) => {
+app.get("/admin/wheel", deviceGuard, adminGuard, async (req,res) => {
   res.json(await Wheel.find())
 })
 
-app.post("/admin/wheel", adminGuard, async (req,res) => {
+app.post("/admin/wheel", deviceGuard, adminGuard, async (req,res) => {
   res.json(await Wheel.create(req.body))
 })
 
