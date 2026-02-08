@@ -1,3 +1,4 @@
+function getToken(){ return localStorage.getItem("admin_token")}
 
 // ---------- USER ----------
 if (document.getElementById("spinBtn")) {
