@@ -120,6 +120,5 @@ if (!MONGO) {
   throw new Error("Mongo URI missing")
 }
 
-mongoose.connect(MONGO)
+app.listen(process.env.PORT || 3000)
 
-app.listen(3000)
