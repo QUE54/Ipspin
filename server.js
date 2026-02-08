@@ -13,6 +13,11 @@ app.use(express.json())
 app.use(express.static("public"))
 
 mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => {
+    console.error("Mongo error:", err.message);
+    process.exit(1);
+  });
 
 const Spin = mongoose.model("Spin", {
   ip: String,
