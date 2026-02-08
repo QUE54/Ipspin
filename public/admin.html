@@ -7,20 +7,30 @@
 </head>
 <body>
 
-<div id="login">
-  <h2>Admin Login</h2>
-  <input id="user" placeholder="username">
-  <input id="pass" type="password" placeholder="password">
-  <button onclick="login()">Login</button>
-</div>
+<div class="container">
 
-<div id="panel" style="display:none">
-  <h2>IP Access</h2>
-  <div id="iplist"></div>
+  <div id="login" class="card">
+    <h2>Admin Login</h2>
+    <input id="user" placeholder="username">
+    <input id="pass" type="password" placeholder="password">
+    <button onclick="login()">Login</button>
+  </div>
 
-  <h2>Wheel</h2>
-  <textarea id="wheelInput" placeholder="ชื่อ,น้ำหนัก"></textarea>
-  <button onclick="saveWheel()">Save</button>
+  <div id="panel" style="display:none">
+
+    <div class="card">
+      <h2>IP Access Control</h2>
+      <div id="iplist"></div>
+    </div>
+
+    <div class="card">
+      <h2>Wheel Settings</h2>
+      <p>รูปแบบ: ชื่อ,น้ำหนัก</p>
+      <textarea id="wheelInput"></textarea>
+      <button onclick="saveWheel()">บันทึก</button>
+    </div>
+
+  </div>
 </div>
 
 <script src="app.js"></script>
