@@ -1,28 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lucky Spin</title>
+<meta charset="utf-8">
+<title>Spin</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div class="container">
-  <div class="card">
-    <h1>🎯 Lucky Spin</h1>
-    <p id="status">กำลังตรวจสอบสิทธิ์...</p>
-  </div>
-
-  <div class="card">
-    <button id="spinBtn" disabled>หมุนวงล้อ</button>
-  </div>
-
-  <div class="card" id="resultBox" style="display:none">
-    <h2>ผลลัพธ์</h2>
-    <p id="resultText"></p>
-  </div>
-</div>
+<h2>🎡 วงล้อสุ่ม</h2>
+<p>IP ของคุณ: <span id="myip"></span></p>
+<p id="status"></p>
+<button id="spinBtn">หมุน</button>
+<h3 id="result"></h3>
 
 <script src="app.js"></script>
 </body>
