@@ -1,38 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Admin</title>
+<meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
+<div id="login" class="card">
+  <input id="user" placeholder="username">
+  <input id="pass" type="password">
+  <button onclick="login()">Login</button>
+</div>
 
-  <div id="login" class="card">
-    <h2>Admin Login</h2>
-    <input id="user" placeholder="username">
-    <input id="pass" type="password" placeholder="password">
-    <button onclick="login()">Login</button>
+<div id="panel" style="display:none">
+  <div class="card">
+    <h3>IP Control</h3>
+    <div id="iplist"></div>
   </div>
 
-  <div id="panel" style="display:none">
-
-    <div class="card">
-      <h2>IP Access Control</h2>
-      <div id="iplist"></div>
-    </div>
-
-    <div class="card">
-      <h2>Wheel Settings</h2>
-      <p>รูปแบบ: ชื่อ,น้ำหนัก</p>
-      <textarea id="wheelInput"></textarea>
-      <button onclick="saveWheel()">บันทึก</button>
-    </div>
-
+  <div class="card">
+    <h3>Wheel</h3>
+    <div id="wheel"></div>
+    <button onclick="saveWheel()">Save</button>
   </div>
 </div>
 
-<script src="app.js"></script>
+<script src="admin.js"></script>
 </body>
 </html>
