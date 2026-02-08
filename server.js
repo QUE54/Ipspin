@@ -41,6 +41,13 @@ app.post("/admin/login", async (req,res) => {
   res.json({ token })
 })
 
+function deviceGuard(req, res, next) {
+  const device = req.headers["x-device-token"]
+  if (device !== process.env.ADMIN_DEVICE_TOKEN)
+    return res.sendStatus(403)
+  next()
+}
+
 // admin guard
 function adminGuard(req,res,next){
   const token = req.headers.authorization?.split(" ")[1]
