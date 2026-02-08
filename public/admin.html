@@ -35,6 +35,13 @@
   </div>
 </div>
 
-<script src="app.js"></script>
+<script src="app.js">
+
+if (localStorage.getItem("ADMIN_DEVICE_TOKEN") !== "ALLOW") {
+  alert("หน้านี้เข้าได้เฉพาะเครื่องแอดมิน");
+  location.href = "/";
+}
+  
+</script>
 </body>
 </html>
