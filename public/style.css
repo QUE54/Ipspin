@@ -1,122 +1,237 @@
-:root{
-  --bg:#f4f6fa;
-  --card:#ffffff;
-  --primary:#4f7cff;
-  --danger:#ff5c5c;
-  --ok:#2ecc71;
-  --text:#1f2937;
-  --muted:#6b7280;
+/* ===============================
+   RESET + BASE
+================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
-*{
-  box-sizing:border-box;
+body {
+  background: linear-gradient(160deg, #0f172a, #020617);
+  color: #e5e7eb;
+  min-height: 100vh;
+  padding: 16px;
 }
 
-body{
-  margin:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background:linear-gradient(180deg,#eef2ff,#f8fafc);
-  color:var(--text);
-  padding:20px;
+/* ===============================
+   COMMON
+================================ */
+h1, h2, h3 {
+  font-weight: 600;
+  margin-bottom: 12px;
 }
 
-/* ---------- layout ---------- */
-.container{
-  max-width:420px;
-  margin:auto;
+p {
+  font-size: 14px;
+  color: #cbd5f5;
 }
 
-.card{
-  background:var(--card);
-  border-radius:14px;
-  padding:20px;
-  box-shadow:0 12px 30px rgba(0,0,0,.08);
-  margin-bottom:20px;
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-h2{
-  margin:0 0 10px;
-  font-size:20px;
+button:active {
+  transform: scale(0.97);
 }
 
-p{
-  margin:6px 0;
-  color:var(--muted);
-  font-size:14px;
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: #020617;
+  color: #fff;
+  border: 1px solid #1e293b;
 }
 
-/* ---------- button ---------- */
-button{
-  width:100%;
-  border:none;
-  border-radius:10px;
-  padding:12px;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  background:var(--primary);
-  color:#fff;
-  transition:.2s;
+/* ===============================
+   LAYOUT WRAPPER
+================================ */
+.container {
+  max-width: 1100px;
+  margin: auto;
 }
 
-button:hover{
-  filter:brightness(1.05);
+/* ===============================
+   CARD
+================================ */
+.card {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
-button:disabled{
-  background:#c7cfe8;
-  cursor:not-allowed;
+/* ===============================
+   SPIN PAGE
+================================ */
+.spin-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
 
-.btn-small{
-  width:auto;
-  padding:6px 10px;
-  font-size:13px;
-  border-radius:8px;
+/* สิทธิ์ในการหมุน */
+.spin-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #020617;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #1e293b;
 }
 
-.btn-danger{ background:var(--danger); }
-.btn-ok{ background:var(--ok); }
-
-/* ---------- input ---------- */
-input, textarea{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border-radius:8px;
-  border:1px solid #d1d5db;
-  font-size:14px;
+.spin-count {
+  font-size: 18px;
+  font-weight: bold;
+  color: #22c55e;
 }
 
-textarea{
-  resize:none;
-  height:160px;
+.spin-disabled {
+  color: #ef4444;
 }
 
-/* ---------- result ---------- */
-.result{
-  margin-top:16px;
-  font-size:22px;
-  font-weight:700;
-  text-align:center;
-  color:var(--primary);
+/* วงล้อ */
+.wheel-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* ---------- admin ---------- */
-.ip-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:#f9fafb;
-  border-radius:8px;
-  padding:8px;
-  margin-bottom:6px;
+canvas {
+  max-width: 100%;
 }
 
-.ip-row span{
-  font-size:13px;
+/* ปุ่มหมุน */
+.spin-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #022c22;
+  font-size: 16px;
 }
 
-.ip-row .actions button{
-  margin-left:4px;
+.spin-btn:disabled {
+  background: #334155;
+  color: #94a3b8;
+}
+
+/* IP DISPLAY */
+.ip-box {
+  font-size: 13px;
+  background: #020617;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  text-align: center;
+}
+
+/* ===============================
+   ADMIN PAGE
+================================ */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* ===============================
+   IP MANAGEMENT
+================================ */
+.ip-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.ip-address {
+  font-weight: bold;
+  color: #38bdf8;
+}
+
+.ip-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-allow {
+  background: #22c55e;
+  color: #022c22;
+}
+
+.btn-reset {
+  background: #facc15;
+  color: #422006;
+}
+
+.btn-ban {
+  background: #ef4444;
+  color: #450a0a;
+}
+
+/* ===============================
+   WHEEL EDITOR
+================================ */
+.wheel-editor {
+  display: grid;
+  gap: 12px;
+}
+
+.wheel-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.wheel-item span {
+  font-size: 13px;
+  text-align: right;
+  color: #38bdf8;
+}
+
+.total-percent {
+  text-align: right;
+  font-size: 14px;
+}
+
+.total-percent.ok {
+  color: #22c55e;
+}
+
+.total-percent.bad {
+  color: #ef4444;
+}
+
+/* ===============================
+   RESPONSIVE (DESKTOP)
+================================ */
+@media (min-width: 768px) {
+
+  .spin-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ip-row {
+    grid-template-columns: 1.5fr 2fr;
+    align-items: center;
+  }
+
 }
