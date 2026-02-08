@@ -1,30 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-<meta name="viewport" content="width=device-width">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="login" class="card">
-  <input id="user" placeholder="username">
-  <input id="pass" type="password">
-  <button onclick="login()">Login</button>
-</div>
+<div class="container admin-layout">
 
-<div id="panel" style="display:none">
+  <!-- จัดการ IP -->
   <div class="card">
-    <h3>IP Control</h3>
-    <div id="iplist"></div>
+    <h2>จัดการ IP</h2>
+    <div id="ipList"></div>
   </div>
 
-  <div class="card">
-    <h3>Wheel</h3>
-    <div id="wheel"></div>
-    <button onclick="saveWheel()">Save</button>
+  <!-- ปรับวงล้อ -->
+  <div class="card wheel-editor">
+    <h2>ปรับวงล้อ</h2>
+
+    <div id="wheelItems"></div>
+
+    <button onclick="addItem()">เพิ่มช่อง</button>
+    <div id="totalPercent" class="total-percent bad">รวม 0%</div>
   </div>
+
 </div>
 
-<script src="admin.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
