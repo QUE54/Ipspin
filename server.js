@@ -9,6 +9,14 @@ const app = express()
 app.use(express.json())
 app.use(express.static("public"))
 
+function getClientIP(req) {
+  const xff = req.headers["x-forwarded-for"]
+  if (xff) {
+    return xff.split(",")[0].trim()
+  }
+  return req.socket.remoteAddress
+}
+
 // connect DB
 const MONGO = process.env.MONGO_URI
 if (!MONGO) throw new Error("Mongo URI missing")
@@ -62,13 +70,13 @@ function adminGuard(req,res,next){
 
 // SPA / API
 app.get("/can-spin", async (req,res) => {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress
+  const ip = getClientIP(req)
   const used = await Spin.findOne({ ip })
   res.json({ canSpin:!used })
 })
 
 app.post("/spin", async (req,res) => {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress
+  const ip = getClientIP(req)
   if (await Spin.findOne({ ip })) return res.sendStatus(403)
 
   const items = await Wheel.find()
@@ -103,5 +111,7 @@ app.post("/admin/wheel", deviceGuard, adminGuard, async (req,res) => {
   res.json(await Wheel.create(req.body))
 })
 
+
+fix: correct client IP handling
 // start
 app.listen(process.env.PORT||3000)
