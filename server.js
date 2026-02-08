@@ -16,14 +16,10 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err=>console.error(err))
 
 /* ---------- MODELS ---------- */
-const Access = mongoose.model("Access",{
-  ip:String,
-  status:{
-    type:String,
-    enum:["allow","used","banned"],
-    default:"allow"
-  },
-  updatedAt:Date
+const Access = mongoose.model("Access", {
+  ip: String,
+  spinsLeft: { type:Number, default:1 },
+  banned: { type:Boolean, default:false }
 })
 
 const Wheel = mongoose.model("Wheel",{
