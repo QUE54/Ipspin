@@ -1,4 +1,4 @@
-const token = localStorage.getItem("admin_token")
+
 // ---------- USER ----------
 if (document.getElementById("spinBtn")) {
   fetch("/can-spin")
@@ -47,7 +47,7 @@ if (document.getElementById("loginBox")) {
 
   async function loadSpins(){
     const r = await fetch("/admin/spins",{
-      headers:{Authorization:"Bearer "+getToken()}
+      headers:{Authorization:"Bearer "+localStorage.getItem("admin_token")}
     })
     const data = await r.json()
     spinList.innerHTML=""
@@ -63,14 +63,14 @@ if (document.getElementById("loginBox")) {
   window.resetIP = async (ip)=>{
     await fetch("/admin/spins/"+ip,{
       method:"DELETE",
-      headers:{Authorization:"Bearer "+getToken()}
+      headers:{Authorization:"Bearer "+localStorage.getItem("admin_token")}
     })
     loadSpins()
   }
 
   async function loadWheel(){
     const r = await fetch("/admin/wheel",{
-      headers:{Authorization:"Bearer "+getToken()}
+      headers:{Authorization:"Bearer "+localStorage.getItem("admin_token")}
     })
     const data = await r.json()
     wheelList.innerHTML=""
@@ -87,7 +87,7 @@ if (document.getElementById("loginBox")) {
       method:"POST",
       headers:{
   "Content-Type":"application/json",
-  Authorization:"Bearer "+getToken()
+  Authorization:"Bearer "+localStorage.getItem("admin_token")
 }
       },
       body:JSON.stringify({
