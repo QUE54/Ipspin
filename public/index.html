@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Spin</title>
+<meta name="viewport" content="width=device-width">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-  <div class="card">
-    <h2>🎡 วงล้อสุ่ม</h2>
-    <p>IP ของคุณ: <b id="myip"></b></p>
-    <p id="status"></p>
-    <button id="spinBtn">หมุนวงล้อ</button>
-    <div class="result" id="result"></div>
-  </div>
+
+<div class="card">
+  <h2>🎡 วงล้อสุ่ม</h2>
+  <div>IP: <b id="ip"></b></div>
+  <div>สิทธิ์คงเหลือ: <b id="left"></b></div>
+  <div id="state"></div>
+
+  <button id="spinBtn">หมุน</button>
+  <div id="result"></div>
 </div>
-<script src="app.js"></script>
+
+<script src="user.js"></script>
 </body>
 </html>
