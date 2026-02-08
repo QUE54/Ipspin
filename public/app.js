@@ -32,7 +32,10 @@ if (document.getElementById("loginBox")) {
         password:pass.value
       })
     })
-    if (!r.ok) return alert("login fail")
+    if (!r.ok) {
+  alert("Login ไม่ผ่าน (username หรือ password ผิด หรือยังไม่ได้สร้าง admin)")
+  return
+}
     const d = await r.json()
     localStorage.setItem("admin_token",d.token)
     showAdmin()
