@@ -1,39 +1,29 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spin Wheel</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lucky Spin</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container spin-layout">
-
-  <!-- สถานะสิทธิ์ -->
-  <div class="card spin-status">
-    <div>
-      <p>สิทธิ์ในการหมุน</p>
-      <div id="spinCount" class="spin-count">0 ครั้ง</div>
-    </div>
-    <div id="spinState" class="spin-disabled">ยังไม่อนุญาต</div>
+<div class="container">
+  <div class="card">
+    <h1>🎯 Lucky Spin</h1>
+    <p id="status">กำลังตรวจสอบสิทธิ์...</p>
   </div>
 
-  <!-- วงล้อ -->
-  <div class="card wheel-box">
-    <canvas id="wheel" width="300" height="300"></canvas>
+  <div class="card">
+    <button id="spinBtn" disabled>หมุนวงล้อ</button>
   </div>
 
-  <!-- ปุ่มหมุน -->
-  <button id="spinBtn" class="spin-btn" disabled>หมุนวงล้อ</button>
-
-  <!-- IP -->
-  <div class="ip-box">
-    IP ของคุณ: <span id="userIp">-</span>
+  <div class="card" id="resultBox" style="display:none">
+    <h2>ผลลัพธ์</h2>
+    <p id="resultText"></p>
   </div>
-
 </div>
 
-<script src="script.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
