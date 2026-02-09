@@ -1,184 +1,93 @@
-/* ===== RESET ===== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+:root{
+  --bg:#0f1220;
+  --card:#161a2f;
+  --accent:#4da3ff;
+  --text:#e6e9ff;
+  --muted:#9aa0c7;
 }
 
-body {
-  min-height: 100vh;
-  background: radial-gradient(circle at top, #111a2e, #070b16 70%);
-  color: #e5e7eb;
+*{
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
 }
 
-/* ===== LAYOUT ===== */
-.container {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 20px 16px 40px;
+body{
+  margin:0;
+  background:linear-gradient(180deg,#0f1220,#0b0e1a);
+  color:var(--text);
+  min-height:100vh;
 }
 
-.section {
-  background: linear-gradient(180deg, #0f172a, #0b1220);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:20px;
 }
 
-.section h2 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #f8fafc;
+.card{
+  background:var(--card);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.4);
+  margin-bottom:16px;
 }
 
-/* ===== TEXT ===== */
-.muted {
-  color: #94a3b8;
-  font-size: 13px;
+h1,h2{
+  margin:0 0 12px;
+  font-weight:600;
 }
 
-.value {
-  font-weight: 600;
-  color: #38bdf8;
+p{
+  margin:0;
+  color:var(--muted);
 }
 
-/* ===== INPUT ===== */
-input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #1e293b;
-  background: #020617;
-  color: #e5e7eb;
-  outline: none;
-  font-size: 14px;
+button{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:none;
+  background:var(--accent);
+  color:#08121f;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
 }
 
-input::placeholder {
-  color: #64748b;
+button:disabled{
+  opacity:.5;
 }
 
-input:focus {
-  border-color: #38bdf8;
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #2a2f55;
+  background:#0d1020;
+  color:var(--text);
+  margin-bottom:12px;
 }
 
-/* ===== BUTTON ===== */
-button {
-  width: 100%;
-  border: none;
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: .15s ease;
+.list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-button.primary {
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-  color: white;
+.item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#0d1020;
+  padding:12px;
+  border-radius:12px;
+  font-size:14px;
 }
 
-button.primary:active {
-  transform: scale(.97);
-}
-
-button.danger {
-  background: #dc2626;
-  color: white;
-}
-
-button.secondary {
-  background: #1e293b;
-  color: #e5e7eb;
-}
-
-button.small {
-  width: auto;
-  padding: 6px 10px;
-  font-size: 12px;
-}
-
-/* ===== LIST ===== */
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.item {
-  background: #020617;
-  border: 1px solid #1e293b;
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.item span {
-  font-size: 13px;
-}
-
-/* ===== ADMIN IP CONTROL ===== */
-.ip-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.ip-actions button {
-  flex: 1;
-}
-
-/* ===== WHEEL PREVIEW ===== */
-.wheel-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: #cbd5f5;
-}
-
-/* ===== STATUS BADGE ===== */
-.badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.badge.ok {
-  background: rgba(34,197,94,.15);
-  color: #22c55e;
-}
-
-.badge.warn {
-  background: rgba(234,179,8,.15);
-  color: #eab308;
-}
-
-.badge.bad {
-  background: rgba(239,68,68,.15);
-  color: #ef4444;
-}
-
-/* ===== SPIN RESULT ===== */
-.result {
-  text-align: center;
-  padding: 20px 10px;
-}
-
-.result .reward {
-  font-size: 22px;
-  font-weight: 700;
-  margin-top: 10px;
-  color: #38bdf8;
-}
-
-/* ===== FOOTER SPACE ===== */
-.spacer {
-  height: 30px;
+.small-btn{
+  width:auto;
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:12px;
 }
