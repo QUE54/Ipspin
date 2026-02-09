@@ -1,33 +1,49 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container admin-layout">
+<div class="container">
 
-  <!-- จัดการ IP -->
-  <div class="card">
-    <h2>จัดการ IP</h2>
-    <div id="ipList"></div>
+  <div class="card" id="loginBox">
+    <h2>Admin Login</h2>
+    <input id="user" placeholder="Username">
+    <input id="pass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
   </div>
 
-  <!-- ปรับวงล้อ -->
-  <div class="card wheel-editor">
-    <h2>ปรับวงล้อ</h2>
+  <div id="adminPanel" style="display:none">
 
-    <div id="wheelItems"></div>
+    <div class="card">
+      <h2>ผู้ที่สุ่มแล้ว</h2>
+      <div class="list" id="spinList"></div>
+    </div>
 
-    <button onclick="addItem()">เพิ่มช่อง</button>
-    <div id="totalPercent" class="total-percent bad">รวม 0%</div>
+    <div class="card">
+      <h2>จัดการวงล้อ</h2>
+      <input id="label" placeholder="ชื่อรางวัล">
+      <input id="percent" type="number" placeholder="เปอร์เซ็นต์">
+      <button onclick="addWheel()">เพิ่ม</button>
+      <div class="list" id="wheelList"></div>
+    </div>
+
   </div>
-
 </div>
 
-<script src="script.js"></script>
+<script src="app.js">
+
+const DEVICE_TOKEN = "3141592653589793"
+
+if (!DEVICE_TOKEN) {
+  alert("อุปกรณ์นี้ไม่ได้รับอนุญาต")
+  location.href = "/"
+}
+  
+</script>
 </body>
 </html>
