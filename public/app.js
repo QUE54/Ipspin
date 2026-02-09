@@ -1,98 +1,128 @@
-const token = localStorage.getItem("admin_token")
+// ================= CONFIG =================
+const DEVICE_TOKEN = "3141592653589793"
 
-/* ---------- USER ---------- */
-if(document.getElementById("spinBtn")){
-  fetch("/me").then(r=>r.json()).then(d=>{
-    myip.textContent=d.ip
-  })
+function getToken(){
+  return localStorage.getItem("admin_token")
+}
 
-  fetch("/status").then(r=>r.json()).then(d=>{
-    status.textContent="สถานะ: "+d.status
-    if(d.status!=="allow") spinBtn.disabled=true
-  })
+// ================= USER =================
+if (document.getElementById("spinBtn")) {
+  fetch("/can-spin")
+    .then(r=>r.json())
+    .then(d=>{
+      const btn = document.getElementById("spinBtn")
+      document.getElementById("status").textContent =
+        d.canSpin ? "คุณมีสิทธิ์สุ่ม" : "IP นี้ใช้สิทธิ์แล้ว"
+      btn.disabled = !d.canSpin
+    })
 
-  spinBtn.onclick=async()=>{
-    const r = await fetch("/spin",{method:"POST"})
-    if(!r.ok){ alert("ไม่สามารถสุ่ม"); return }
+  spinBtn.onclick = async ()=>{
+    spinBtn.disabled = true
+    const r = await fetch("/spin",{ method:"POST" })
     const d = await r.json()
-    result.textContent=d.label
+    resultBox.style.display = "block"
+    resultText.textContent = d.label
   }
 }
 
-/* ---------- ADMIN ---------- */
-if(document.getElementById("login")){
-  if(token) show()
+// ================= ADMIN =================
+if (document.getElementById("loginBox")) {
 
-  window.login=async()=>{
+  if (getToken()) showAdmin()
+
+  window.login = async ()=>{
     const r = await fetch("/admin/login",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({username:user.value,password:pass.value})
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        username:user.value,
+        password:pass.value
+      })
     })
-    if(!r.ok) return alert("login fail")
+
+    if (!r.ok) {
+      alert("Login ไม่ผ่าน")
+      return
+    }
+
     const d = await r.json()
-    localStorage.setItem("admin_token",d.token)
-    show()
+    localStorage.setItem("admin_token", d.token)
+    showAdmin()
   }
 
-  function show(){
-    login.style.display="none"
-    panel.style.display="block"
-    loadIP()
+  function adminHeaders(){
+    return {
+      Authorization: "Bearer " + getToken(),
+      "x-device-token": DEVICE_TOKEN
+    }
+  }
+
+  function showAdmin(){
+    loginBox.style.display = "none"
+    adminPanel.style.display = "block"
+    loadSpins()
     loadWheel()
   }
 
-  async function loadIP(){
-    const r = await fetch("/admin/access",{
-      headers:{Authorization:"Bearer "+localStorage.getItem("admin_token")}
+  async function loadSpins(){
+    const r = await fetch("/admin/spins",{
+      headers: adminHeaders()
     })
+
+    if (!r.ok) {
+      alert("อุปกรณ์นี้ไม่ได้รับอนุญาต")
+      return
+    }
+
     const data = await r.json()
-    iplist.innerHTML=""
-    data.forEach(i=>{
-      iplist.innerHTML+=`
-        <div>
-          ${i.ip} [${i.status}]
-          <button onclick="setIP('${i.ip}','allow')">Allow</button>
-          <button onclick="setIP('${i.ip}','used')">Reset</button>
-          <button onclick="setIP('${i.ip}','banned')">Ban</button>
+    spinList.innerHTML = ""
+    data.forEach(s=>{
+      spinList.innerHTML += `
+        <div class="item">
+          ${s.ip}
+          <button class="small-btn" onclick="resetIP('${s.ip}')">
+            คืนสิทธิ์
+          </button>
         </div>`
     })
   }
 
-  window.setIP=async(ip,status)=>{
-    await fetch("/admin/access/"+ip,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        Authorization:"Bearer "+localStorage.getItem("admin_token")
-      },
-      body:JSON.stringify({status})
+  window.resetIP = async (ip)=>{
+    await fetch("/admin/spins/"+ip,{
+      method:"DELETE",
+      headers: adminHeaders()
     })
-    loadIP()
+    loadSpins()
   }
 
   async function loadWheel(){
     const r = await fetch("/admin/wheel",{
-      headers:{Authorization:"Bearer "+localStorage.getItem("admin_token")}
+      headers: adminHeaders()
     })
-    const d = await r.json()
-    wheelInput.value = d.map(w=>`${w.label},${w.weight}`).join("\n")
+    const data = await r.json()
+    wheelList.innerHTML = ""
+    data.forEach(w=>{
+      wheelList.innerHTML += `
+        <div class="item">
+          ${w.label} (${w.percent}%)
+        </div>`
+    })
   }
 
-  window.saveWheel=async()=>{
-    const rows = wheelInput.value.trim().split("\n")
-    const wheels = rows.map(r=>{
-      const [label,weight]=r.split(",")
-      return {label,weight:+weight}
-    })
+  window.addWheel = async ()=>{
     await fetch("/admin/wheel",{
       method:"POST",
       headers:{
-        "Content-Type":"application/json",
-        Authorization:"Bearer "+localStorage.getItem("admin_token")
+        ...adminHeaders(),
+        "Content-Type":"application/json"
       },
-      body:JSON.stringify(wheels)
+      body:JSON.stringify({
+        label: label.value,
+        percent: +percent.value
+      })
     })
-    alert("saved")
+    label.value = ""
+    percent.value = ""
+    loadWheel()
   }
 }
