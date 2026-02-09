@@ -18,9 +18,10 @@ mongoose.connect(process.env.MONGO_URI)
 /* ---------- MODELS ---------- */
 const Access = mongoose.model("Access", {
   ip: String,
-  spinsLeft: { type:Number, default:1 },
-  banned: { type:Boolean, default:false }
-})
+  spinsLeft: Number,
+  banned: Boolean
+}
+)
 
 const Wheel = mongoose.model("Wheel",{
   label:String,
