@@ -68,3 +68,28 @@ function saveWheel(){
     body:JSON.stringify(data)
   })
 }
+
+
+const ADMIN_PASSWORD = "1341501508909"; // ตั้งรหัสเอง
+
+const loginBox = document.getElementById("loginBox");
+const adminPanel = document.getElementById("adminPanel");
+const loginBtn = document.getElementById("loginBtn");
+
+// ถ้าเคยล็อคอินแล้ว
+if (localStorage.getItem("isAdmin") === "true") {
+  loginBox.style.display = "none";
+  adminPanel.style.display = "block";
+}
+
+loginBtn.addEventListener("click", () => {
+  const pass = document.getElementById("adminPassword").value;
+
+  if (pass === ADMIN_PASSWORD) {
+    localStorage.setItem("isAdmin", "true");
+    loginBox.style.display = "none";
+    adminPanel.style.display = "block";
+  } else {
+    alert("รหัสไม่ถูกต้อง");
+  }
+});
