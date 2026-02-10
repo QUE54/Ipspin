@@ -1,47 +1,70 @@
-let token = localStorage.getItem("admin_token")
+function token(){ return localStorage.getItem("token") }
 
 async function login(){
   const r = await fetch("/admin/login",{
     method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({username:user.value,password:pass.value})
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ username:u.value, password:p.value })
   })
+  if (!r.ok) return alert("login fail")
   const d = await r.json()
-  token=d.token
-  localStorage.setItem("admin_token",token)
+  localStorage.setItem("token",d.token)
   show()
 }
 
-function show(){
+async function show(){
   login.style.display="none"
   panel.style.display="block"
-  loadIP()
+  loadUsers()
   loadWheel()
 }
 
-async function loadIP(){
-  const r = await fetch("/admin/access",{headers:{Authorization:"Bearer "+token}})
-  const d = await r.json()
-  iplist.innerHTML=""
-  d.forEach(i=>{
-    iplist.innerHTML+=`
-      <div>
-        ${i.ip}
-        <input type="number" value="${i.spinsLeft}"
-          onchange="setIP('${i.ip}',this.value,false)">
-        <button onclick="setIP('${i.ip}',0,true)">Ban</button>
+async function loadUsers(){
+  const r = await fetch("/admin/users",{
+    headers:{Authorization:"Bearer "+token()}
+  })
+  const data = await r.json()
+  users.innerHTML=""
+  data.forEach(u=>{
+    users.innerHTML+=`
+      <div>${u.ip}
+      <input type="number" value="${u.spinsLeft}"
+        onchange="set('${u.ip}',this.value,false)">
+      <button onclick="set('${u.ip}',0,true)">BAN</button>
       </div>`
   })
 }
 
-async function setIP(ip,spins,banned){
-  await fetch("/admin/access/"+ip,{
+function set(ip, spins, banned){
+  fetch("/admin/users/"+ip,{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
-      Authorization:"Bearer "+token
+      Authorization:"Bearer "+token()
     },
-    body:JSON.stringify({spinsLeft:+spins,banned})
+    body:JSON.stringify({ spinsLeft:spins, banned })
+  }).then(loadUsers)
+}
+
+async function loadWheel(){
+  const r = await fetch("/admin/wheel",{
+    headers:{Authorization:"Bearer "+token()}
   })
-  loadIP()
+  const d = await r.json()
+  wheel.value = d.map(x=>`${x.label},${x.weight}`).join("\n")
+}
+
+function saveWheel(){
+  const data = wheel.value.split("\n").map(l=>{
+    const [label,weight]=l.split(",")
+    return { label, weight:+weight }
+  })
+  fetch("/admin/wheel",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:"Bearer "+token()
+    },
+    body:JSON.stringify(data)
+  })
 }
