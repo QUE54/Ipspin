@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h2>Admin</h2>
-<input id="u" placeholder="user">
-<input id="p" type="password" placeholder="pass">
-<button onclick="login()">Login</button>
-<pre id="out"></pre>
+
+<div class="card">
+  <h1>🔐 ADMIN</h1>
+
+  <div id="loginBox">
+    <input id="user" placeholder="username">
+    <input id="pass" type="password" placeholder="password">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="panel" style="display:none">
+    <h2>📱 Devices</h2>
+    <div id="devices"></div>
+
+    <h2>🎁 Wheel</h2>
+    <input id="label" placeholder="ชื่อรางวัล">
+    <input id="weight" type="number" placeholder="น้ำหนัก">
+    <button onclick="addPrize()">เพิ่มรางวัล</button>
+
+    <div id="wheel"></div>
+  </div>
+</div>
+
 <script src="admin.js"></script>
 </body>
 </html>
