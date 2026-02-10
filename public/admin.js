@@ -1,22 +1,22 @@
 let token = "";
 
 async function login() {
-  const res = await fetch("/admin/login", {
+  const res = await fetch("/api/admin/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: user.value,
-      password: pass.value
+      user: u.value,
+      pass: p.value
     })
   });
   const data = await res.json();
   token = data.token;
-  loadUsers();
+  load();
 }
 
-async function loadUsers() {
-  const res = await fetch("/admin/users", {
-    headers: { Authorization: "Bearer " + token }
+async function load() {
+  const res = await fetch("/api/admin/devices", {
+    headers: { authorization: token }
   });
   out.innerText = JSON.stringify(await res.json(), null, 2);
 }
