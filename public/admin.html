@@ -1,35 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Admin</title>
-<link rel="stylesheet" href="style.css">
+  <title>Admin</title>
 </head>
-<body class="dark">
+<body>
+  <h1>Admin</h1>
 
-<div id="loginBox">
-  <h2>Admin Login</h2>
-  <input type="password" id="adminPassword" placeholder="รหัสแอดมิน">
-  <button id="loginBtn">เข้าสู่ระบบ</button>
-</div>
+  <input id="user" placeholder="user" />
+  <input id="pass" placeholder="pass" type="password" />
+  <button onclick="login()">Login</button>
 
-<div id="panel" style="display:none">
-  <h2>Dashboard</h2>
+  <pre id="out"></pre>
 
-  <div class="grid">
-    <div class="card">
-      <h3>จัดการ IP</h3>
-      <div id="users"></div>
-    </div>
-
-    <div class="card">
-      <h3>วงล้อ</h3>
-      <textarea id="wheel" rows="6"></textarea>
-      <button onclick="saveWheel()">Save</button>
-    </div>
-  </div>
-</div>
-
-<script src="admin.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
