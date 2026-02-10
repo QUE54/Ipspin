@@ -1,28 +1,20 @@
-async function load(){
-  const r = await fetch("/status")
-  const d = await r.json()
-
-  ip.textContent = d.ip
-  left.textContent = d.spinsLeft
-
-  if(d.banned){
-    state.textContent="⛔ ถูกแบน"
-    spinBtn.disabled=true
-  }else if(d.spinsLeft<=0){
-    state.textContent="⚠️ สิทธิ์หมด"
-    spinBtn.disabled=true
-  }else{
-    state.textContent="✅ หมุนได้"
-    spinBtn.disabled=false
+async function load() {
+  const res = await fetch("/status");
+  if (res.status === 403) {
+    document.body.innerHTML = "BANNED";
+    return;
   }
+  const data = await res.json();
+  document.getElementById("info").innerText =
+    `IP: ${data.ip} | Spins: ${data.spinsLeft}`;
 }
 
-spinBtn.onclick = async()=>{
-  const r = await fetch("/spin",{method:"POST"})
-  if(!r.ok) return
-  const d = await r.json()
-  result.textContent="🎁 "+d.result.label
-  load()
-}
+document.getElementById("spin").onclick = async () => {
+  const res = await fetch("/spin", { method: "POST" });
+  const data = await res.json();
+  document.getElementById("result").innerText =
+    data.reward || data.error;
+  load();
+};
 
-load()
+load();
