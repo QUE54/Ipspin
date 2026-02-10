@@ -3,154 +3,100 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import path from "path";
-import { fileURLToPath } from "url";
 
 dotenv.config();
 const app = express();
+
 app.use(express.json());
+app.use(express.static("public"));
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-app.use(express.static(path.join(__dirname, "public")));
-
-// ===== MongoDB =====
 mongoose.connect(process.env.MONGO_URI);
 
+// ===== Schema =====
+const Device = mongoose.model("Device", {
+  deviceId: String,
+  spinsLeft: { type: Number, default: 1 },
+  banned: { type: Boolean, default: false }
+});
+
+const SpinLog = mongoose.model("SpinLog", {
+  deviceId: String,
+  prize: String,
+  time: { type: Date, default: Date.now }
+});
+
+const Prize = mongoose.model("Prize", {
+  name: String,
+  weight: Number
+});
+
 // ===== Utils =====
-function getIP(req) {
-  return (
-    req.headers["x-forwarded-for"]?.split(",")[0] ||
-    req.socket.remoteAddress
-  );
-}
-
-function randomByWeight(items) {
-  const total = items.reduce((s, i) => s + i.weight, 0);
-  let r = Math.random() * total;
-  for (const i of items) {
-    if ((r -= i.weight) <= 0) return i;
-  }
-}
-
-// ===== Models =====
-const IP = mongoose.model(
-  "IP",
-  new mongoose.Schema({
-    ip: String,
-    spinsLeft: { type: Number, default: 0 },
-    banned: { type: Boolean, default: false }
-  })
-);
-
-const Wheel = mongoose.model(
-  "Wheel",
-  new mongoose.Schema({
-    label: String,
-    weight: Number
-  })
-);
-
-const Admin = mongoose.model(
-  "Admin",
-  new mongoose.Schema({
-    username: String,
-    password: String
-  })
-);
-
-// ===== Init Admin =====
-(async () => {
-  const exist = await Admin.findOne({ username: process.env.ADMIN_USER });
-  if (!exist) {
-    const hash = await bcrypt.hash(process.env.ADMIN_PASS, 10);
-    await Admin.create({
-      username: process.env.ADMIN_USER,
-      password: hash
-    });
-  }
-})();
-
-// ===== Middleware =====
-function authAdmin(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.sendStatus(401);
+function auth(req, res, next) {
   try {
-    jwt.verify(token, process.env.JWT_SECRET);
+    jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
     next();
   } catch {
-    res.sendStatus(403);
+    res.sendStatus(401);
   }
 }
 
-// ===== User APIs =====
-app.get("/status", async (req, res) => {
-  const ip = getIP(req);
-  let user = await IP.findOne({ ip });
-  if (!user) user = await IP.create({ ip });
-  if (user.banned) return res.sendStatus(403);
+// ===== User =====
+app.post("/api/spin", async (req, res) => {
+  const { deviceId } = req.body;
+  let device = await Device.findOne({ deviceId });
 
-  res.json({
-    ip,
-    spinsLeft: user.spinsLeft
-  });
+  if (!device) device = await Device.create({ deviceId });
+
+  if (device.banned) return res.json({ error: "ถูกแบน" });
+  if (device.spinsLeft <= 0) return res.json({ error: "หมดสิทธิ์" });
+
+  const prizes = await Prize.find();
+  const total = prizes.reduce((s, p) => s + p.weight, 0);
+  let rand = Math.random() * total;
+
+  let prize;
+  for (let p of prizes) {
+    if (rand < p.weight) { prize = p.name; break; }
+    rand -= p.weight;
+  }
+
+  device.spinsLeft--;
+  await device.save();
+  await SpinLog.create({ deviceId, prize });
+
+  res.json({ prize });
 });
 
-app.post("/spin", async (req, res) => {
-  const ip = getIP(req);
-  const user = await IP.findOne({ ip });
-  if (!user || user.banned) return res.sendStatus(403);
-  if (user.spinsLeft <= 0)
-    return res.status(400).json({ error: "NO_SPINS" });
-
-  const wheel = await Wheel.find();
-  const result = randomByWeight(wheel);
-
-  user.spinsLeft--;
-  await user.save();
-
-  res.json({ reward: result.label });
+// ===== Admin =====
+app.post("/api/admin/login", async (req, res) => {
+  const { user, pass } = req.body;
+  if (
+    user === process.env.ADMIN_USER &&
+    pass === process.env.ADMIN_PASS
+  ) {
+    const token = jwt.sign({}, process.env.JWT_SECRET);
+    res.json({ token });
+  } else res.sendStatus(401);
 });
 
-// ===== Admin APIs =====
-app.post("/admin/login", async (req, res) => {
-  const { username, password } = req.body;
-  const admin = await Admin.findOne({ username });
-  if (!admin) return res.sendStatus(401);
-
-  const ok = await bcrypt.compare(password, admin.password);
-  if (!ok) return res.sendStatus(401);
-
-  const token = jwt.sign({ username }, process.env.JWT_SECRET);
-  res.json({ token });
+app.get("/api/admin/devices", auth, async (req, res) => {
+  res.json(await Device.find());
 });
 
-app.get("/admin/users", authAdmin, async (req, res) => {
-  res.json(await IP.find());
-});
-
-app.post("/admin/users/:ip", authAdmin, async (req, res) => {
-  const { spinsLeft, banned } = req.body;
-  await IP.updateOne(
-    { ip: req.params.ip },
-    { spinsLeft, banned },
-    { upsert: true }
-  );
+app.post("/api/admin/device", auth, async (req, res) => {
+  const { deviceId, spinsLeft, banned } = req.body;
+  await Device.updateOne({ deviceId }, { spinsLeft, banned });
   res.sendStatus(200);
 });
 
-app.get("/admin/wheel", authAdmin, async (req, res) => {
-  res.json(await Wheel.find());
+app.get("/api/admin/prizes", auth, async (req, res) => {
+  res.json(await Prize.find());
 });
 
-app.post("/admin/wheel", authAdmin, async (req, res) => {
-  await Wheel.deleteMany();
-  await Wheel.insertMany(req.body);
+app.post("/api/admin/prizes", auth, async (req, res) => {
+  await Prize.deleteMany();
+  await Prize.insertMany(req.body);
   res.sendStatus(200);
 });
 
-// ===== Start =====
-app.listen(process.env.PORT, () =>
-  console.log("DSOOD RUNNING")
-);
+app.listen(3000, () => console.log("RUN"));
