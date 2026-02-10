@@ -1,127 +1,156 @@
-import dotenv from "dotenv"
-import express from "express"
-import mongoose from "mongoose"
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config()
-const app = express()
-app.use(express.json())
-app.use(express.static("public"))
+dotenv.config();
+const app = express();
+app.use(express.json());
 
-/* ---------- DB ---------- */
-mongoose.connect(process.env.MONGO_URI)
-  .then(()=>console.log("MongoDB connected"))
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-/* ---------- MODELS ---------- */
-const UserIP = mongoose.model("UserIP", {
-  ip: String,
-  spinsLeft: Number,
-  banned: Boolean
-})
+app.use(express.static(path.join(__dirname, "public")));
 
-const Wheel = mongoose.model("Wheel", {
-  label: String,
-  weight: Number
-})
+// ===== MongoDB =====
+mongoose.connect(process.env.MONGO_URI);
 
-const Admin = mongoose.model("Admin", {
-  username: String,
-  password: String
-})
+// ===== Utils =====
+function getIP(req) {
+  return (
+    req.headers["x-forwarded-for"]?.split(",")[0] ||
+    req.socket.remoteAddress
+  );
+}
 
-/* ---------- ADMIN AUTH ---------- */
-function adminGuard(req,res,next){
-  const token = req.headers.authorization?.split(" ")[1]
-  if (!token) return res.sendStatus(401)
+function randomByWeight(items) {
+  const total = items.reduce((s, i) => s + i.weight, 0);
+  let r = Math.random() * total;
+  for (const i of items) {
+    if ((r -= i.weight) <= 0) return i;
+  }
+}
+
+// ===== Models =====
+const IP = mongoose.model(
+  "IP",
+  new mongoose.Schema({
+    ip: String,
+    spinsLeft: { type: Number, default: 0 },
+    banned: { type: Boolean, default: false }
+  })
+);
+
+const Wheel = mongoose.model(
+  "Wheel",
+  new mongoose.Schema({
+    label: String,
+    weight: Number
+  })
+);
+
+const Admin = mongoose.model(
+  "Admin",
+  new mongoose.Schema({
+    username: String,
+    password: String
+  })
+);
+
+// ===== Init Admin =====
+(async () => {
+  const exist = await Admin.findOne({ username: process.env.ADMIN_USER });
+  if (!exist) {
+    const hash = await bcrypt.hash(process.env.ADMIN_PASS, 10);
+    await Admin.create({
+      username: process.env.ADMIN_USER,
+      password: hash
+    });
+  }
+})();
+
+// ===== Middleware =====
+function authAdmin(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.sendStatus(401);
   try {
-    jwt.verify(token, process.env.JWT_SECRET)
-    next()
+    jwt.verify(token, process.env.JWT_SECRET);
+    next();
   } catch {
-    res.sendStatus(403)
+    res.sendStatus(403);
   }
 }
 
-/* ---------- ADMIN SETUP (ใช้ครั้งเดียว) ---------- */
-app.post("/setup-admin", async (req,res)=>{
-  if (req.body.key !== process.env.ADMIN_SETUP_KEY)
-    return res.sendStatus(403)
+// ===== User APIs =====
+app.get("/status", async (req, res) => {
+  const ip = getIP(req);
+  let user = await IP.findOne({ ip });
+  if (!user) user = await IP.create({ ip });
+  if (user.banned) return res.sendStatus(403);
 
-  const hash = await bcrypt.hash(req.body.password,10)
-  await Admin.create({ username:req.body.username, password:hash })
-  res.send("admin created")
-})
+  res.json({
+    ip,
+    spinsLeft: user.spinsLeft
+  });
+});
 
-/* ---------- LOGIN ---------- */
-app.post("/admin/login", async (req,res)=>{
-  const admin = await Admin.findOne({ username:req.body.username })
-  if (!admin) return res.sendStatus(401)
+app.post("/spin", async (req, res) => {
+  const ip = getIP(req);
+  const user = await IP.findOne({ ip });
+  if (!user || user.banned) return res.sendStatus(403);
+  if (user.spinsLeft <= 0)
+    return res.status(400).json({ error: "NO_SPINS" });
 
-  const ok = await bcrypt.compare(req.body.password, admin.password)
-  if (!ok) return res.sendStatus(401)
+  const wheel = await Wheel.find();
+  const result = randomByWeight(wheel);
 
-  const token = jwt.sign({ id:admin._id }, process.env.JWT_SECRET)
-  res.json({ token })
-})
+  user.spinsLeft--;
+  await user.save();
 
-/* ---------- USER ---------- */
-function getIP(req){
-  return (req.headers["x-forwarded-for"] || req.socket.remoteAddress)
-    .split(",")[0].trim()
-}
+  res.json({ reward: result.label });
+});
 
-app.get("/me", async (req,res)=>{
-  const ip = getIP(req)
-  let user = await UserIP.findOne({ ip })
-  if (!user)
-    user = await UserIP.create({ ip, spinsLeft:1, banned:false })
+// ===== Admin APIs =====
+app.post("/admin/login", async (req, res) => {
+  const { username, password } = req.body;
+  const admin = await Admin.findOne({ username });
+  if (!admin) return res.sendStatus(401);
 
-  res.json(user)
-})
+  const ok = await bcrypt.compare(password, admin.password);
+  if (!ok) return res.sendStatus(401);
 
-app.post("/spin", async (req,res)=>{
-  const ip = getIP(req)
-  const user = await UserIP.findOne({ ip })
-  if (!user || user.banned || user.spinsLeft <= 0)
-    return res.sendStatus(403)
+  const token = jwt.sign({ username }, process.env.JWT_SECRET);
+  res.json({ token });
+});
 
-  const items = await Wheel.find()
-  const total = items.reduce((a,b)=>a+b.weight,0)
-  let r = Math.random()*total
-  let acc = 0, result
+app.get("/admin/users", authAdmin, async (req, res) => {
+  res.json(await IP.find());
+});
 
-  for (let i of items){
-    acc += i.weight
-    if (r <= acc){ result=i; break }
-  }
+app.post("/admin/users/:ip", authAdmin, async (req, res) => {
+  const { spinsLeft, banned } = req.body;
+  await IP.updateOne(
+    { ip: req.params.ip },
+    { spinsLeft, banned },
+    { upsert: true }
+  );
+  res.sendStatus(200);
+});
 
-  user.spinsLeft--
-  await user.save()
-  res.json(result)
-})
+app.get("/admin/wheel", authAdmin, async (req, res) => {
+  res.json(await Wheel.find());
+});
 
-/* ---------- ADMIN IP ---------- */
-app.get("/admin/users", adminGuard, async (_,res)=>{
-  res.json(await UserIP.find())
-})
+app.post("/admin/wheel", authAdmin, async (req, res) => {
+  await Wheel.deleteMany();
+  await Wheel.insertMany(req.body);
+  res.sendStatus(200);
+});
 
-app.post("/admin/users/:ip", adminGuard, async (req,res)=>{
-  await UserIP.updateOne(
-    { ip:req.params.ip },
-    { spinsLeft:req.body.spinsLeft, banned:req.body.banned }
-  )
-  res.send("ok")
-})
-
-/* ---------- ADMIN WHEEL ---------- */
-app.get("/admin/wheel", adminGuard, async (_,res)=>{
-  res.json(await Wheel.find())
-})
-
-app.post("/admin/wheel", adminGuard, async (req,res)=>{
-  await Wheel.deleteMany()
-  await Wheel.insertMany(req.body)
-  res.send("ok")
-})
-
-app.listen(process.env.PORT || 3000)
+// ===== Start =====
+app.listen(process.env.PORT, () =>
+  console.log("DSOOD RUNNING")
+);
