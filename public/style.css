@@ -1,28 +1,95 @@
-body.dark{
-  background:#0b1220;
-  color:#fff;
-  font-family:sans-serif;
+* {
+  box-sizing: border-box;
 }
 
-.card{
-  background:#121a2f;
-  padding:20px;
-  border-radius:10px;
-  margin:20px;
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background: radial-gradient(circle at top, #1e1e2f, #0b0b12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
 }
 
-input,button,textarea{
-  width:100%;
-  margin:5px 0;
-  padding:10px;
-  background:#1e2a4a;
-  color:#fff;
-  border:none;
-  border-radius:6px;
+/* กล่องหลัก */
+.card {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 24px 40px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #1b1b2f, #111122);
+  box-shadow:
+    0 20px 40px rgba(0,0,0,.6),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  text-align: center;
+  animation: fadeUp .6s ease;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
+/* หัวข้อ */
+h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  margin-top: 8px;
+  margin-bottom: 32px;
+  font-size: 1rem;
+  opacity: .75;
+}
+
+/* ปุ่มหมุน */
+button {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 20px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111;
+  background: linear-gradient(135deg, #ffcc00, #ff9900);
+  box-shadow:
+    0 10px 25px rgba(255,165,0,.45),
+    inset 0 -4px 0 rgba(0,0,0,.15);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+button:active {
+  transform: scale(.97);
+  box-shadow:
+    0 5px 12px rgba(255,165,0,.35),
+    inset 0 -2px 0 rgba(0,0,0,.2);
+}
+
+/* ผลลัพธ์ */
+#result {
+  margin-top: 28px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  min-height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop .4s ease;
+}
+
+/* แอนิเมชัน */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  0% { transform: scale(.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
